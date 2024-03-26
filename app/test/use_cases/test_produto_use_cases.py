@@ -1,7 +1,7 @@
 import pytest
 from fastapi import HTTPException
 from app.db.models import Produtos as ProdutoModel
-from app.schemas.produto import Produto
+from app.schemas.produto import Produto, ProdutoOutput
 from app.use_cases.produto import ProdutoUseCases
 
 
@@ -94,4 +94,10 @@ def test_list_produtos(db_session, produtos_no_db):
     
     produtos = uc.list_produtos()
     
+    for produto in produtos_no_db:
+        db_session.refresh(produto)
+    
     assert len(produtos) == 4
+    assert type(produtos[0]) == ProdutoOutput
+    assert produtos[0].nome == produtos_no_db[0].nome
+    assert produtos[0].categoria.nome == produtos_no_db[0].categoria.nome

@@ -3,7 +3,7 @@ from fastapi.exceptions import HTTPException
 from fastapi import status
 from app.db.models import Produtos as ProdutoModel
 from app.db.models import Categoria as CategoriaModel
-from app.schemas.produto import Produto
+from app.schemas.produto import Produto, ProdutoOutput
 
 
 class ProdutoUseCases:
@@ -43,3 +43,18 @@ class ProdutoUseCases:
         self.db_session.delete(produto_no_db)
         self.db_session.commit()
         
+    def list_produtos(self):
+        produtos_no_db = self.db_session.query(ProdutoModel).all()
+        
+        produtos = [
+            self._serialize_produto(produto_no_db)
+            for produto_no_db in produtos_no_db
+        ]
+        
+        return produtos
+        
+    def _serialize_produto(self, produtos_no_db: ProdutoModel):
+        produto_dict = produtos_no_db.__dict__
+        produto_dict['categoria'] = produtos_no_db.categoria.__dict__
+        
+        return ProdutoOutput(**produto_dict)
