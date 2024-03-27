@@ -67,9 +67,9 @@ def produtos_no_db(db_session):
     
     produtos = [
         ProdutoModel(nome='Camisa Adidas', slug='camisa-adidas', preco=100, quantidade=10, categoria_id=categoria.id),
-        ProdutoModel(nome='Short Adidas', slug='short-adidas', preco=100, quantidade=10, categoria_id=categoria.id),
-        ProdutoModel(nome='Moletom Nike', slug='moletom-nike', preco=100, quantidade=10, categoria_id=categoria.id),
-        ProdutoModel(nome='Camisa Lacoste', slug='camisa-lacoste', preco=100, quantidade=10, categoria_id=categoria.id)
+        ProdutoModel(nome='Short Adidas', slug='short', preco=100, quantidade=10, categoria_id=categoria.id),
+        ProdutoModel(nome='Moletom', slug='moletom-adidas', preco=100, quantidade=10, categoria_id=categoria.id),
+        ProdutoModel(nome='Camisa', slug='camisa', preco=100, quantidade=10, categoria_id=categoria.id)
     ]
     
     for produto in produtos:
@@ -85,3 +85,5 @@ def produtos_no_db(db_session):
         db_session.delete(produto)
     db_session.delete(categoria)
     db_session.commit()
+    
+    

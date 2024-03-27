@@ -6,7 +6,3 @@ app = FastAPI()
 app.include_router(categoria_router)
 app.include_router(produto_router)
 
-
-@app.get('/health-check')
-def health_check():
-    return True

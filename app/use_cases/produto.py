@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from fastapi.exceptions import HTTPException
 from fastapi import status
 from app.db.models import Produtos as ProdutoModel
@@ -43,8 +44,13 @@ class ProdutoUseCases:
         self.db_session.delete(produto_no_db)
         self.db_session.commit()
         
-    def list_produtos(self):
-        produtos_no_db = self.db_session.query(ProdutoModel).all()
+    def list_produtos(self, search: str = ''):
+        produtos_no_db = self.db_session.query(ProdutoModel).filter(
+            or_(
+                ProdutoModel.nome.ilike(f'%{search}%'),
+                ProdutoModel.slug.ilike(f'%{search}')
+                )
+            ).all()
         
         produtos = [
             self._serialize_produto(produto_no_db)

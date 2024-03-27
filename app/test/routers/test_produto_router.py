@@ -80,6 +80,7 @@ def test_update_produto_route_invalid_id():
     
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
+
 def test_delete_produto_route(db_session, produto_no_db):
     response = client.delete(f'/produtos/delete/{produto_no_db.id}')
     
@@ -89,7 +90,52 @@ def test_delete_produto_route(db_session, produto_no_db):
     
     assert len(produto_no_db) == 0
     
+    
 def test_delete_produto_route_invalid_id():
     response = client.delete(f'produtos/delete/1')
     
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_list_produtos_route(produtos_no_db):
+    response = client.get('/produtos/list')
+    
+    assert response.status_code == status.HTTP_200_OK
+    
+    data = response.json()
+    
+    assert len(data) == 4
+    assert data [0] == {
+        'id': produtos_no_db[0].id,
+        'nome': produtos_no_db[0].nome,
+        'slug': produtos_no_db[0].slug,
+        'preco': produtos_no_db[0].preco,
+        'quantidade': produtos_no_db[0].quantidade,
+        'categoria': {
+            'nome': produtos_no_db[0].categoria.nome,
+            'slug': produtos_no_db[0].categoria.slug
+        }
+  
+    }
+    
+    
+def test_list_produtos_route_com_search(produtos_no_db):
+    response = client.get('/produtos/list?search=adidas')
+    
+    assert response.status_code == status.HTTP_200_OK
+    
+    data = response.json()
+    
+    assert len(data) == 3
+    assert data [0] == {
+        'id': produtos_no_db[0].id,
+        'nome': produtos_no_db[0].nome,
+        'slug': produtos_no_db[0].slug,
+        'preco': produtos_no_db[0].preco,
+        'quantidade': produtos_no_db[0].quantidade,
+        'categoria': {
+            'nome': produtos_no_db[0].categoria.nome,
+            'slug': produtos_no_db[0].categoria.slug
+        }
+  
+    }

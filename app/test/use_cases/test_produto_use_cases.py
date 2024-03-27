@@ -101,3 +101,17 @@ def test_list_produtos(db_session, produtos_no_db):
     assert type(produtos[0]) == ProdutoOutput
     assert produtos[0].nome == produtos_no_db[0].nome
     assert produtos[0].categoria.nome == produtos_no_db[0].categoria.nome
+    
+    
+def test_list_produtos_com_search(db_session, produtos_no_db):
+    uc = ProdutoUseCases(db_session=db_session)
+    
+    produtos = uc.list_produtos(search='adidas')
+    
+    for produto in produtos_no_db:
+        db_session.refresh(produto)
+    
+    assert len(produtos) == 3
+    assert type(produtos[0]) == ProdutoOutput
+    assert produtos[0].nome == produtos_no_db[0].nome
+    assert produtos[0].categoria.nome == produtos_no_db[0].categoria.nome
