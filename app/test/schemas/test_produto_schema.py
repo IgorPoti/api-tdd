@@ -51,7 +51,7 @@ def test_produto_schema_invalid_price():
             preco=0,
             quantidade=25
         )    
-        
+
 
 def test_produto_input_schema():
     produto = Produto(

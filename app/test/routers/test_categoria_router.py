@@ -7,7 +7,7 @@ client = TestClient(app)
 
 def test_categoria_router(db_session):
     body = {
-        "name":"Roupa",
+        "nome":"Roupa",
         "slug": "roupa"
     }
     

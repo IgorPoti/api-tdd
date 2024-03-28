@@ -21,3 +21,12 @@ class Produtos(Base):
     updated_at = Column('updated_at', DateTime, onupdate=func.now())
     categoria_id = Column('categoria_id', ForeignKey('categorias.id'), nullable=False)
     categoria = relationship('Categoria', back_populates='produtos')
+
+class Usuario(Base):
+
+    __tablename__ = 'usuarios'
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    nome = Column('nome', String(length=255), nullable=False)
+    senha = Column('senha', String, nullable=False)
+    
+    
