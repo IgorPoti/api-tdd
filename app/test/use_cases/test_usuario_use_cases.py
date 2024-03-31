@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from fastapi import HTTPException
 from app.schemas.usuario import Usuario
@@ -47,3 +48,40 @@ def test_registro_usuario_atual_existe(db_session):
         
     db_session.delete(usuario_no_db)
     db_session.commit()
+    
+
+def test_usuario_login(db_session, usuario_no_db):
+    uc = UsuarioUseCases(db_session=db_session)
+   
+    usuario = Usuario(
+        nome=usuario_no_db.nome,
+        senha='admin#'
+    )
+    
+    token_data = uc.usuario_login(usuario=usuario, expires_in=30)
+    
+    assert token_data.expires_at < datetime.now() + timedelta(31)
+    
+
+def test_usuario_login_nome_invalido(db_session):
+    uc = UsuarioUseCases(db_session=db_session)
+   
+    usuario = Usuario(
+        nome='teste',
+        senha='admin#'
+    )
+    
+    with pytest.raises(HTTPException):
+        uc.usuario_login(usuario=usuario, expires_in=30)
+        
+
+def test_usuario_login_senha_invalida(db_session, usuario_no_db):
+    uc = UsuarioUseCases(db_session=db_session)
+   
+    usuario = Usuario(
+        nome=usuario_no_db.nome,
+        senha='admis'
+    )
+    
+    with pytest.raises(HTTPException):
+        uc.usuario_login(usuario=usuario, expires_in=30)

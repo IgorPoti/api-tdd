@@ -1,7 +1,11 @@
 import pytest
+from passlib.context import CryptContext
 from app.db.connection import Session
 from app.db.models import Categoria as CategoriaModel
 from app.db.models import Produtos as ProdutoModel
+from app.db.models import Usuario as UsuarioModel
+
+crypt_context = CryptContext(schemes=['sha256_crypt'])
 
 @pytest.fixture()
 def db_session():
@@ -87,3 +91,18 @@ def produtos_no_db(db_session):
     db_session.commit()
     
     
+@pytest.fixture()
+def usuario_no_db(db_session):
+    usuario = UsuarioModel(
+        nome='Joao',
+        senha=crypt_context.hash('admin#')
+    )
+    
+    db_session.add(usuario)
+    db_session.commit()
+    db_session.refresh(usuario)
+    
+    yield usuario
+    
+    db_session.delete(usuario)
+    db_session.commit()
