@@ -1,6 +1,8 @@
 import pytest
+from decouple import config
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
+from jose import jwt
 from fastapi import HTTPException
 from app.schemas.usuario import Usuario
 from app.db.models import Usuario as UsuarioModel
@@ -8,6 +10,8 @@ from app.use_cases.usuario import UsuarioUseCases
 
 
 crypt_context = CryptContext(schemes=['sha256_crypt'])
+SECRET_KEY = config('SECRET_KEY')
+ALGORITHM = config('ALGORITHM')
 
 def test_registro_usuario(db_session):
     usuario = Usuario(
@@ -85,3 +89,29 @@ def test_usuario_login_senha_invalida(db_session, usuario_no_db):
     
     with pytest.raises(HTTPException):
         uc.usuario_login(usuario=usuario, expires_in=30)
+        
+
+def test_verificar_token(db_session, usuario_no_db):
+    uc = UsuarioUseCases(db_session=db_session)
+    
+    data = {
+        'sub': usuario_no_db.nome,
+        'exp': datetime.now() + timedelta(30)
+    }
+    
+    access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    
+    uc.verificar_token(token=access_token)
+    
+
+def test_verificar_token_expirado(usuario_no_db, db_session):
+    uc = UsuarioUseCases(db_session=db_session)
+    
+    data = {
+        'sub': usuario_no_db.nome,
+        'exp': datetime.now() - timedelta(30)
+    }
+    
+    access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    with pytest.raises(HTTPException):
+        uc.verificar_token(token=access_token)

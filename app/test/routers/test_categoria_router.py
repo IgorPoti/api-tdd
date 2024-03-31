@@ -4,6 +4,9 @@ from app.db.models import Categoria as CategoriaModel
 from app.main import app
 
 client = TestClient(app)
+header = {"Authorization": "Bearer token"}
+client.headers = header
+
 
 def test_categoria_router(db_session):
     body = {

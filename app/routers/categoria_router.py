@@ -2,11 +2,11 @@ from typing import List
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 from app.schemas.categoria import Categoria, CategoriaOutPut
-from app.routers.deps import get_db_session
+from app.routers.deps import get_db_session, auth
 from app.use_cases.categoria import CategoriaUseCases
 
 
-router = APIRouter(prefix="/categoria", tags=['Categoria'])
+router = APIRouter(prefix="/categoria", tags=['Categoria'], dependencies=[Depends(auth)])
 
 
 @router.post('/add', status_code=status.HTTP_201_CREATED, description="Adicionar nova categoria")

@@ -51,6 +51,18 @@ class UsuarioUseCases:
         
         return token_data
     
+    def verificar_token(self, token:str):
+        try:
+            data = jwt.decode(token=token, key=SECRET_KEY, algorithms=[ALGORITHM])
+        except JWTError:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token inválido!')
+        
+        usuario_no_db = self._get_usuario(nome=data['sub'])
+        
+        if usuario_no_db is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token inválido!')
+            
+    
     def _get_usuario(self, nome: str, ):
         usuario_no_db = self.db_session.query(UsuarioModel).filter_by(nome=nome).first()
         return usuario_no_db
